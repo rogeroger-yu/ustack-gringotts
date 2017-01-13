@@ -6,7 +6,6 @@ from oslo_config import cfg
 
 from gringotts.checker import notifier
 from gringotts.openstack.common import log
-from gringotts.openstack.common.gettextutils import _
 
 
 LOG = log.getLogger(__name__)
@@ -16,10 +15,11 @@ class EmailNotifier(notifier.Notifier):
 
     @staticmethod
     def notify_has_owed(context, account, contact, projects, **kwargs):
-        # TODO(chengkun): Now we can't get user contact info,
-        # and it will be "unknown". we will add in the future
+        # TODO(chengkun): Now we only can get few user info from kunkka,
+        # maybe we should support more info in the future, such as company
+        # info、real_name and so on.
         account_name = contact.get('real_name') or contact['email'].split('@')[0]
-        mobile_number = contact.get('mobile_number') or "unknown"
+        mobile_number = contact.get('phone') or "unknown"
         company = contact.get('company') or "unknown"
 
         # Notify user
@@ -77,7 +77,7 @@ class EmailNotifier(notifier.Notifier):
     def notify_before_owed(context, account, contact, projects, price_per_day, days_to_owe, **kwargs):
         # Get account info
         account_name = contact.get('real_name') or contact['email'].split('@')[0]
-        mobile_number = contact.get('mobile_number') or "unknown"
+        mobile_number = contact.get('phone') or "unknown"
         company = contact.get('company') or "unknown"
 
         # Notify user
@@ -163,7 +163,7 @@ class EmailNotifier(notifier.Notifier):
     @staticmethod
     def notify_account_charged(context, account, contact, type, value, bonus=None, **kwargs):
         account_name = contact.get('real_name') or contact['email'].split('@')[0]
-        mobile_number = contact.get('mobile_number') or "unknown"
+        mobile_number = contact.get('phone') or "unknown"
         company = contact.get('company') or "unknown"
 
         # Notify user

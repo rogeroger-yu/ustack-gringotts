@@ -93,8 +93,6 @@ def create_or_update_product(name, service, region_id, unit_price):
                 service=service,
                 region_id=region_id,
                 unit_price=unit_price,
-                type="regular",
-                unit="hour",
                 description="some desc")
 
     if product['products']:

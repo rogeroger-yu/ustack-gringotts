@@ -18,6 +18,7 @@ from gringotts.openstack.common import uuidutils
 from gringotts import service
 from gringotts import services
 from gringotts.services import keystone
+from gringotts.services import kunkka
 from gringotts import utils
 
 
@@ -756,8 +757,7 @@ class CheckerService(os_service.Service):
 
                     reserved_days = utils.cal_reserved_days(account['level'])
                     account['reserved_days'] = reserved_days
-                    country_code = contact.get("country_code") or "86"
-                    language = "en_US" if country_code != '86' else "zh_CN"
+                    language = cfg.CONF.notification_language
                     self.notifier.notify_has_owed(self.ctxt, account, contact,
                                                   projects, language=language)
                 else:
@@ -819,9 +819,8 @@ class CheckerService(os_service.Service):
                     if not projects:
                         continue
 
-                    contact = keystone.get_uos_user(account['user_id'])
-                    country_code = contact.get("country_code") or "86"
-                    language = "en_US" if country_code != '86' else "zh_CN"
+                    contact = kunkka.get_uos_user(account['user_id'])
+                    language = cfg.CONF.notification_language
                     self.notifier.notify_before_owed(self.ctxt, account,
                                                      contact, projects,
                                                      str(price_per_day),
@@ -854,9 +853,8 @@ class CheckerService(os_service.Service):
                 if account['level'] == 9:
                     continue
 
-                contact = keystone.get_uos_user(account['user_id'])
-                country_code = contact.get("country_code") or "86"
-                language = "en_US" if country_code != '86' else "zh_CN"
+                contact = kunkka.get_uos_user(account['user_id'])
+                language = cfg.CONF.notification_language
                 account['reserved_days'] = utils.cal_reserved_days(account['level'])
 
                 orders = list(

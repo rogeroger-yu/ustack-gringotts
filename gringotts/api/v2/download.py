@@ -17,6 +17,7 @@ from gringotts.api import acl
 from gringotts.api.wsmeext_pecan import wsexpose
 from gringotts.api.v2 import models
 from gringotts.services import keystone
+from gringotts.services import kunkka
 from gringotts.openstack.common import log
 from gringotts.openstack.common import timeutils
 
@@ -65,11 +66,11 @@ class ChargesController(rest.RestController):
             user = users.get(user_id)
             if user:
                 return user
-            contact = keystone.get_uos_user(user_id) or {}
+            contact = kunkka.get_uos_user(user_id) or {}
             user_name = contact.get('name')
             email = contact.get('email')
             real_name = contact.get('real_name') or 'unknown'
-            mobile = contact.get('mobile_number') or 'unknown'
+            mobile = contact.get('phone') or 'unknown'
             company = contact.get('company') or 'unknown'
             users[user_id] = models.User(user_id=user_id,
                                          user_name=user_name,
@@ -159,7 +160,7 @@ class OrdersController(rest.RestController):
             user = users.get(user_id)
             if user:
                 return user
-            contact = keystone.get_uos_user(user_id)
+            contact = kunkka.get_uos_user(user_id)
             user_name = contact['name'] if contact else None
             users[user_id] = models.User(user_id=user_id,
                                          user_name=user_name)

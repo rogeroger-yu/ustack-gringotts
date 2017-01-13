@@ -8,7 +8,7 @@ from gringotts.api.v2 import models
 from gringotts import exception
 from gringotts.openstack.common import log as logging
 from gringotts import policy
-from gringotts.services import keystone
+from gringotts.services import kunkka
 
 LOG = logging.getLogger(__name__)
 
@@ -37,14 +37,14 @@ class SalesPersonAccountsController(rest.RestController):
             context, self.sales_id, offset, limit)
         account_list = []
         for account in accounts:
-            user = keystone.get_uos_user(account.user_id)
+            user = kunkka.get_uos_user(account.user_id)
             account_list.append(
                 models.SalesPersonAccount(
                     user_id=account.user_id,
                     user_name=user['name'],
                     user_email=user.get('email', ''),
                     real_name=user.get('real_name', ''),
-                    mobile_number=user.get('mobile_number', ''),
+                    mobile_number=user.get('phone', ''),
                     company=user.get('company', ''),
                     balance=account.balance,
                     consumption=account.consumption,

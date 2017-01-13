@@ -45,7 +45,10 @@ OPTS = [
                 help="The minimum charge value the support staff can operate"),
     cfg.StrOpt('reward_value',
                default='0',
-               help="The reward value if meet the reward condition")
+               help="The reward value if meet the reward condition"),
+    cfg.StrOpt('notification_language',
+                default='zh_CN',
+                help="The language for sending notification, default is zh_CN"),
 ]
 
 CONF = cfg.CONF

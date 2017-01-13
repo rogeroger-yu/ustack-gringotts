@@ -12,6 +12,7 @@ from gringotts import utils
 from gringotts.api.v2 import models
 from gringotts.checker import notifier
 from gringotts.services import keystone
+from gringotts.services import kunkka
 from gringotts.openstack.common import memorycache
 from gringotts.openstack.common import log
 from gringotts.policy import check_policy
@@ -169,7 +170,7 @@ class PrechargeController(rest.RestController):
                 # Notifier account
                 if cfg.CONF.notify_account_charged:
                     account = conn.get_account(context, user_id).as_dict()
-                    contact = keystone.get_uos_user(user_id)
+                    contact = kunkka.get_uos_user(user_id)
                     self.notifier = notifier.NotifierService(
                         cfg.CONF.checker.notifier_level)
                     self.notifier.notify_account_charged(

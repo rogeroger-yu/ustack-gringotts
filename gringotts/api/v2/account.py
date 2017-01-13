@@ -16,6 +16,7 @@ from gringotts import utils as gringutils
 from gringotts.api.v2 import models
 from gringotts.db import models as db_models
 from gringotts.services import keystone
+from gringotts.services import kunkka
 from gringotts.checker import notifier
 from gringotts.openstack.common import log
 from gringotts.openstack.common.gettextutils import _
@@ -53,12 +54,12 @@ class AccountSalesPersonController(rest.RestController):
             raise exception.NotAuthorized()
 
         try:
-            sales_user = keystone.get_uos_user(sales_id)
+            sales_user = kunkka.get_uos_user(sales_id)
             return models.SalesPerson(
                 user_id=sales_id, user_name=sales_user['name'],
                 user_email=sales_user.get('email', ''),
                 real_name=sales_user.get('real_name', ''),
-                mobile_number=sales_user.get('mobile_number', ''),
+                mobile_number=sales_user.get('phone', ''),
                 company=sales_user.get('company', '')
             )
         except (exception.NotFound):
@@ -144,7 +145,7 @@ class AccountController(rest.RestController):
 
         invitees = []
         for invitee in _invitees:
-            user = keystone.get_uos_user(invitee.user_id)
+            user = kunkka.get_uos_user(invitee.user_id)
             if user:
                 user_name = user.get(
                     'real_name') or user['email'].split('@')[0]
@@ -242,7 +243,7 @@ class AccountController(rest.RestController):
                     if cfg.CONF.notify_account_charged:
                         inviter = self.conn.get_account(
                             request.context, _account.inviter).as_dict()
-                        contact = keystone.get_uos_user(inviter['user_id'])
+                        contact = kunkka.get_uos_user(inviter['user_id'])
                         self.notifier = notifier.NotifierService(
                             cfg.CONF.checker.notifier_level)
                         self.notifier.notify_account_charged(
@@ -265,9 +266,8 @@ class AccountController(rest.RestController):
             if cfg.CONF.notify_account_charged:
                 account = self.conn.get_account(
                     request.context, self._id).as_dict()
-                contact = keystone.get_uos_user(account['user_id'])
-                country_code = contact.get("country_code") or "86"
-                language = "en_US" if country_code != '86' else "zh_CN"
+                contact = kunkka.get_uos_user(account['user_id'])
+                language = cfg.CONF.notification_language
                 self.notifier = notifier.NotifierService(
                     cfg.CONF.checker.notifier_level)
                 self.notifier.notify_account_charged(
@@ -428,11 +428,11 @@ class ChargeController(rest.RestController):
             user = users.get(user_id)
             if user:
                 return user
-            contact = keystone.get_uos_user(user_id) or {}
+            contact = kunkka.get_uos_user(user_id) or {}
             user_name = contact.get('name')
             email = contact.get('email')
             real_name = contact.get('real_name')
-            mobile = contact.get('mobile_number')
+            mobile = contact.get('phone')
             company = contact.get('company')
             users[user_id] = models.User(user_id=user_id,
                                          user_name=user_name,
