@@ -207,10 +207,11 @@ if __name__ == '__main__':
         ('instance:compute-8', 'compute', region, get_unit_price([[0, '1.3330']])),
         ('instance:compute-12', 'compute', region, get_unit_price([[0, '2.0000']])),
         ('ip.floating', 'network', region, get_unit_price([[0, '0.0300']])),
-        ('volume.size', 'block_storage', region, get_unit_price([[0, '0.0060']])),
+        ('volume.size', 'block_storage', region, get_unit_price([[0, '0.0200']])),
         ('sata.volume.size', 'block_storage', region, get_unit_price([[0, '0.0060']])),
         ('ssd.volume.size', 'block_storage', region, get_unit_price([[0, '0.0200']])),
         ('snapshot.size', 'block_storage', region, get_unit_price([[0, '0.0020']])),
+        ('router', 'network', region, get_unit_price([[0, '0.0500']])),
         ('listener', 'network', region, get_unit_price([[0, '0.0010']])),
     ]
     for name, service, region_id, unit_price in products:
