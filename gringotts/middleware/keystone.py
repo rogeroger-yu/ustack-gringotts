@@ -37,7 +37,7 @@ KEYSTONE_OPTS = [
 ]
 cfg.CONF.register_opts(KEYSTONE_OPTS,group="billing")
 
-UUID_RE = r"([0-9a-f]{32}|[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12})"
+UUID_RE = r"([0-9a-f]{32}|[0-9a-f]{64}|[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12})"
 API_VERSION = r"(v2.0|v3)"
 USER_RESOURCE_RE = r"(users)"
 PROJECT_RESOURCE_RE = r"(projects|tenants)"
