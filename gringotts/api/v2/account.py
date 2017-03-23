@@ -615,7 +615,7 @@ class AccountsController(rest.RestController):
     def _lookup(self, user_id, *remainder):
         if remainder and not remainder[-1]:
             remainder = remainder[:-1]
-        if len(user_id) == 32:
+        if user_id:
             return AccountController(user_id), remainder
 
     @wsexpose(models.AdminAccounts, bool, int, int, wtypes.text)
