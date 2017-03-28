@@ -233,23 +233,17 @@ class ProjectsController(rest.RestController):
             projects = self._list_keystone_projects()
 
             for u, p in itertools.product(user_projects, projects):
-                if u.project_id == p['id']:
-                    billing_owner = p['users']['billing_owner']
-                    project_owner = p['users']['project_owner']
-                    project_creator = p['users']['project_creator']
+                if u.project_id == p.id:
                     up = models.UserProject(user_id=user_id,
                                             project_id=u.project_id,
-                                            project_name=p['name'],
+                                            project_name=p.name,
                                             user_consumption=u.user_consumption,
                                             project_consumption=u.project_consumption,
-                                            billing_owner=dict(user_id=billing_owner.get('id') if billing_owner else None,
-                                                               user_name=billing_owner.get('name') if billing_owner else None),
-                                            project_owner=dict(user_id=project_owner.get('id') if project_owner else None,
-                                                               user_name=project_owner.get('name') if project_owner else None),
-                                            project_creator=dict(user_id=project_creator.get('id') if project_creator else None,
-                                                                 user_name=project_creator.get('name') if project_creator else None),
+                                            billing_owner=None,
+                                            project_owner=None,
+                                            project_creator=None,
                                             is_historical=u.is_historical,
-                                            created_at=timeutils.parse_isotime(p['created_at']) if p['created_at'] else None)
+                                            created_at=u.created_at)
                     result.append(up)
         elif type.lower() == 'all':
             # if admin call this api, limit to admin's user_id

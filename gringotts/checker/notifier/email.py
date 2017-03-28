@@ -18,7 +18,7 @@ class EmailNotifier(notifier.Notifier):
         # TODO(chengkun): Now we only can get few user info from kunkka,
         # maybe we should support more info in the future, such as company
         # info、real_name and so on.
-        account_name = contact.get('real_name') or contact['email'].split('@')[0]
+        account_name = contact.get('name') or contact['email'].split('@')[0]
         mobile_number = contact.get('phone') or "unknown"
         company = contact.get('company') or "unknown"
 
@@ -76,7 +76,7 @@ class EmailNotifier(notifier.Notifier):
     @staticmethod
     def notify_before_owed(context, account, contact, projects, price_per_day, days_to_owe, **kwargs):
         # Get account info
-        account_name = contact.get('real_name') or contact['email'].split('@')[0]
+        account_name = contact.get('name') or contact['email'].split('@')[0]
         mobile_number = contact.get('phone') or "unknown"
         company = contact.get('company') or "unknown"
 
@@ -135,7 +135,7 @@ class EmailNotifier(notifier.Notifier):
         """Only notify for user with has_owed or will_owed order
         """
         # Get account info
-        account_name = contact.get('real_name') or contact['email'].split('@')[0]
+        account_name = contact.get('name') or contact['email'].split('@')[0]
 
         # Notify user
         payload = {
@@ -162,7 +162,7 @@ class EmailNotifier(notifier.Notifier):
 
     @staticmethod
     def notify_account_charged(context, account, contact, type, value, bonus=None, **kwargs):
-        account_name = contact.get('real_name') or contact['email'].split('@')[0]
+        account_name = contact.get('name') or contact['email'].split('@')[0]
         mobile_number = contact.get('phone') or "unknown"
         company = contact.get('company') or "unknown"
 

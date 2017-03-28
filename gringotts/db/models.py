@@ -281,13 +281,14 @@ class Project(Model):
 
 class UserProject(Model):
     def __init__(self, user_id, project_id, user_consumption,
-                 project_consumption, is_historical):
+                 project_consumption, is_historical, created_at):
         Model.__init__(self,
                        user_id=user_id,
                        project_id=project_id,
                        user_consumption=user_consumption,
                        project_consumption=project_consumption,
-                       is_historical=is_historical)
+                       is_historical=is_historical,
+                       created_at=created_at)
 
 
 class Deduct(Model):

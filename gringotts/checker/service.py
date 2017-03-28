@@ -61,7 +61,17 @@ OPTS = [
                help="The interval to check if resources match with orders"),
     cfg.IntOpt('check_cron_jobs_interval',
                default=12,
-               help="The interval to check if resources match with orders")
+               help="The interval to check if resources match with orders"),
+
+    cfg.IntOpt('check_owed_hour_interval_day',
+               default=1,
+               help="The interval to check if resource owed/will owed"),
+    cfg.IntOpt('check_owed_order_interval_day',
+               default=1,
+               help="The interval to checke if order owed/will owed"),
+    cfg.IntOpt('remind_clock',
+               default=9,
+               help="The remind moment")
 ]
 
 cfg.CONF.register_opts(OPTS, group="checker")
@@ -218,10 +228,14 @@ class CheckerService(os_service.Service):
              start_date),
         ]
 
-        nine_clock = self._absolute_9_clock()
+        _remind_clock = self._absolute_remind_clock()
         center_jobs = [
-            (self.check_owed_hour_resources_and_notify, 24, nine_clock),
-            (self.check_owed_order_resources_and_notify, 24, nine_clock),
+            (self.check_owed_hour_resources_and_notify,
+             cfg.CONF.checker.check_owed_hour_interval_day * 24,
+             _remind_clock),
+            (self.check_owed_order_resources_and_notify,
+             cfg.CONF.checker.check_owed_order_interval_day * 24,
+             _remind_clock),
             # (self.check_user_to_account, 2, start_date),
             # (self.check_project_to_project, 2, start_date),
         ]
@@ -243,13 +257,14 @@ class CheckerService(os_service.Service):
         LOG.warn("[%s] Load jobs successfully, waiting for other checkers "
                  "to join the group...", self.member_id)
 
-    def _absolute_9_clock(self):
+    def _absolute_remind_clock(self):
         nowutc = datetime.datetime.utcnow()
         nowutc_time = nowutc.time()
         nowutc_date = nowutc.date()
-        clock = datetime.time(1, 0, 0)
+        _set_time = (cfg.CONF.checker.remind_clock + 16)%24
+        clock = datetime.time(_set_time, 0, 0)
         if nowutc_time > clock:
-            nowutc_date = nowutc_date + datetime.timedelta(hours=24)
+            nowutc_date = nowutc_date + datetime.timedelta(hours=cfg.CONF.checker.check_owed_order_interval_day * 24)
         return datetime.datetime.combine(nowutc_date, clock)
 
     def _check_resource_to_order(self, resource, resource_to_order,
@@ -819,7 +834,8 @@ class CheckerService(os_service.Service):
                     if not projects:
                         continue
 
-                    contact = kunkka.get_uos_user(account['user_id'])
+                    _contact = keystone.get_user(account['user_id']).to_dict()
+                    contact = kunkka.get_uos_user(account['user_id']) or _contact
                     language = cfg.CONF.notification_language
                     self.notifier.notify_before_owed(self.ctxt, account,
                                                      contact, projects,
@@ -853,7 +869,8 @@ class CheckerService(os_service.Service):
                 if account['level'] == 9:
                     continue
 
-                contact = kunkka.get_uos_user(account['user_id'])
+                _contact = keystone.get_user(account['user_id']).to_dict()
+                contact = kunkka.get_uos_user(account['user_id']) or _contact
                 language = cfg.CONF.notification_language
                 account['reserved_days'] = utils.cal_reserved_days(account['level'])
 

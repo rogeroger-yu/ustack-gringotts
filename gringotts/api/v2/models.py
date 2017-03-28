@@ -402,14 +402,14 @@ class AdminAccountInDetail(APIBase):
     balance = decimal.Decimal
     consumption = decimal.Decimal
     level = int
-    user = UserInDetail
+    user = wtypes.text
     salesperson = UserInDetail
     user_id = wtypes.text
-    sales_id = wtypes.text
+    #sales_id = wtypes.text
     project_id = wtypes.text
     domain_id = wtypes.text
     owed = bool
-    inviter = wtypes.text
+    #inviter = wtypes.text
     created_at = wtypes.text
     price_per_day = decimal.Decimal
     remaining_day = int

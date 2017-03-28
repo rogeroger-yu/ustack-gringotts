@@ -525,8 +525,8 @@ class DetailController(rest.RestController):
         user_ids = []
         for account in accounts:
             user_ids.append(account.user_id)
-            if account.sales_id:
-                user_ids.append(account.sales_id)
+            #if account.sales_id:
+            #    user_ids.append(account.sales_id)
 
             if cfg.CONF.external_billing.enable:
                 try:
@@ -550,28 +550,25 @@ class DetailController(rest.RestController):
                 user=None,
                 user_id=account.user_id,
                 salesperson=None,
-                sales_id=account.sales_id,
+                sales_id=None,
                 balance=account.balance,
                 consumption=account.consumption,
                 level=account.level,
-                project_id=account.project_id,
+                project_id=None,
                 domain_id=account.domain_id,
                 owed=owed,
-                inviter=account.inviter,
+                inviter=None,
                 created_at=account.created_at,
                 price_per_day=price_per_day,
                 remaining_day=remaining_day
             )
             results.append(result)
 
-        users = keystone.get_users_by_user_ids(user_ids)
+        #users = keystone.get_users_by_user_ids(user_ids)
         for result in results:
-            user = users.get(result.user_id)
-            salesperson = users.get(result.sales_id)
+            user = keystone.get_user(result.user_id)
             if user:
-                result.user = models.UserInDetail(**user)
-            if salesperson:
-                result.salesperson = models.UserInDetail(**salesperson)
+                result.user = user.name
 
         return models.AdminAccountsInDetail(total_count=count,
                                             accounts=results)
@@ -615,7 +612,8 @@ class AccountsController(rest.RestController):
     def _lookup(self, user_id, *remainder):
         if remainder and not remainder[-1]:
             remainder = remainder[:-1]
-        if user_id:
+        _correct = len(user_id) == 32 or len(user_id) == 64
+        if _correct:
             return AccountController(user_id), remainder
 
     @wsexpose(models.AdminAccounts, bool, int, int, wtypes.text)

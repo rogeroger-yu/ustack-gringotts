@@ -1656,7 +1656,8 @@ class Connection(api.Connection):
                 project_id=u.project_id,
                 user_consumption=u.consumption,
                 project_consumption=p.consumption if p else u.consumption,
-                is_historical=False if p else True)
+                is_historical=False if p else True,
+                created_at=u.created_at)
             result.append(up)
 
         return result

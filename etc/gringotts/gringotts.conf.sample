@@ -48,9 +48,13 @@ enable_center_jobs=True
 enable_non_center_jobs=True
 try_to_fix=False
 notifier_level=0
-days_to_owe=7
 recharge_url=https://console.ustack.com/bill/account_charge
 order_recharge_url=https://console.ustack.com/bill/order
+
+days_to_owe=7
+check_owed_hour_interval_day=1
+check_owed_order_interval_day=1
+remind_clock=9
 
 [service_credentials]
 os_username=admin
