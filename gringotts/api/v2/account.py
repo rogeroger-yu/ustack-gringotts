@@ -368,21 +368,27 @@ class AccountController(rest.RestController):
                                              within_one_hour=True,
                                              bill_methods=['hour'])
         price_per_day = gringutils._quantize_decimal(0)
-        remaining_day = -1
         if not orders:
-            return models.Estimate(price_per_day=price_per_day,
-                                   remaining_day=remaining_day)
+            if account.balance < 0:
+                return (price_per_day, -2)
+            else:
+                return (price_per_day, -1)
 
         price_per_hour = 0
         for order in orders:
             price_per_hour += gringutils._quantize_decimal(order.unit_price)
 
         if price_per_hour == 0:
-            return models.Estimate(price_per_day=price_per_day,
-                                   remaining_day=remaining_day)
-
-        price_per_day = price_per_hour * 24
-        remaining_day = int(account.balance / price_per_day)
+            if account.balance < 0:
+                return (price_per_day, -2)
+            else:
+                return (price_per_day, -1)
+        elif price_per_hour > 0:
+            if account.balance < 0:
+                return (price_per_day, -2)
+            else:
+                price_per_day = price_per_hour * 24
+                remaining_day = int(account.balance / price_per_day)
 
         return models.Estimate(price_per_day=price_per_day,
                                remaining_day=remaining_day)
@@ -584,19 +590,27 @@ class DetailController(rest.RestController):
                                              within_one_hour=True,
                                              bill_methods=['hour'])
         price_per_day = gringutils._quantize_decimal(0)
-        remaining_day = -1
         if not orders:
-            return (price_per_day, remaining_day)
+            if balance < 0:
+                return (price_per_day, -2)
+            else:
+                return (price_per_day, -1)
 
         price_per_hour = 0
         for order in orders:
             price_per_hour += gringutils._quantize_decimal(order.unit_price)
 
         if price_per_hour == 0:
-            return (price_per_day, remaining_day)
-
-        price_per_day = price_per_hour * 24
-        remaining_day = int(balance / price_per_day)
+            if balance < 0:
+                return (price_per_day, -2)
+            else:
+                return (price_per_day, -1)
+        elif price_per_hour > 0:
+            if balance < 0:
+                return (price_per_day, -2)
+            else:
+                price_per_day = price_per_hour * 24
+                remaining_day = int(balance / price_per_day)
 
         return (price_per_day, remaining_day)
 
